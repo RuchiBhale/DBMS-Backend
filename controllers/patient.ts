@@ -28,23 +28,19 @@ export const createPatient = async (req: Request, res: Response) => {
 
         const { p_name, address, gender, dob , email, d_id, password } = req.body;
 
-
         // Hashing the password using bcrypt
         const salt = await bcrypt.genSalt(10);
         const securedPassword = await bcrypt.hash(password, salt);
 
-        const createUserQuery = `SELECT InsertUserAndGetID ('${p_name}', '${address}', '${gender}','${dob}','${p_contact}', '${email}', '${d_id}','${securedPassword}');`;
+        const createUserQuery = `INSERT INTO patient (p_name, address, gender, dob, p_contact, p_email, d_id, password) VALUES ('${p_name}', '${address}', '${gender}', '${dob}', ${p_contact}, '${email}', ${d_id}, '${securedPassword}')`;
 
-        // const createUser = await queryDatabase(createUserQuery);
-        const createPatientQueryArray = await queryDatabase(createUserQuery);
-        const new_pid = Object.values(createPatientQueryArray[0])[0];
-
-        
+        const createUser = await queryDatabase(createUserQuery);
+        // const createPatientQueryArray = await queryDatabase(createUserQuery);
+        // const new_pid = Object.values(createPatientQueryArray[0])[0];
 
         return res.status(201).json({
             status: true,
             message: "Patient created successfully",
-            p_id:new_pid
         });
     } catch (error) {
         return res.status(500).json({
