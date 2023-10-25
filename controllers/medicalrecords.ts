@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
-// import jwt from "jsonwebtoken";
+
 dotenv.config(); // Load environment variables from .env file
 
 import { queryDatabase } from "../database/connection";
@@ -11,7 +11,7 @@ export const setmedicalrecords = async (req: Request, res: Response) => {
         const d_id = req.params.d_id;
 
     
-        const {p_id,dov,prescription,diagnosis } = req.body; // fields of appointment table
+        const {p_id,dov,prescription,diagnosis } = req.body; 
 
          // Check if username already exists
          let checkDoctorQuery = `SELECT *

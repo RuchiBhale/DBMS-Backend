@@ -6,7 +6,6 @@ const router = express.Router();
 // TODO: Add Collection routes
 import {
     setappointment,
-   
 } from "../controllers/appointment";
 
 router

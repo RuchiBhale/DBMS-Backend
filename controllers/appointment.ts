@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
 
@@ -23,7 +22,7 @@ export const setappointment = async (req: Request, res: Response) => {
             });
         }
 
-        const { p_id,d_id,a_date,a_time,description } = req.body; // fields of appointment table
+        const { p_id,d_id,a_date,a_time,description} = req.body; // fields of appointment table
 
          // Check if username already exists
          let checkDoctorQuery = `SELECT *
@@ -36,7 +35,7 @@ export const setappointment = async (req: Request, res: Response) => {
              message: "Sorry there is no such doctor registered",
          });
      }
-        const setappointmentQuery = `SELECT SetAppointmentAndGetID('${p_id}', '${d_id}', '${a_date}','${a_time}','${description}');`;
+        const setappointmentQuery = `SELECT SetAppointmentAndGetID('${p_id}', '${d_id}', '${a_date}','${a_time}','${description}','${p_contact}');`;
 
         // const createUser = await queryDatabase(createUserQuery);
         const setappointmentQueryArray = await queryDatabase(setappointmentQuery);

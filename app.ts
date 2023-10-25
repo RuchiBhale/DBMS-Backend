@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import express from "express";
 import * as mysql from "mysql2";
+const cors = require("cors");
 dotenv.config(); // Load environment variables from .env file
 var bodyParser = require("body-parser");
 
@@ -12,14 +13,13 @@ const port = process.env.PORT || 6606;
 
 // // Middleware
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+    // Enable CORS for multiple origins
+    cors({
+      origin:"http://localhost:3000",
+    })
+  );
 
-// Static Files directory
-// app.use(express.static("./public"));
-
-// Routes
-
-// clean routes (ex. api/v1/{user}/pdf and then upload etc.)
 app.use("/patient", PatientRouter);
 app.use("/appointment", AppointmentRouter);
 app.use("/medicalrecords", MedicalRecordRouter);

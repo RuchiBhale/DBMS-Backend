@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
-// import jwt from "jsonwebtoken";
+
 dotenv.config(); // Load environment variables from .env file
 
 import { queryDatabase } from "../database/connection";
@@ -26,21 +26,22 @@ export const createPatient = async (req: Request, res: Response) => {
             });
         }
 
-        const { p_name, address, gender, dob , email, d_id, password } = req.body;
+        const { p_name, address, gender, dob , p_email, password } = req.body;
 
         // Hashing the password using bcrypt
         const salt = await bcrypt.genSalt(10);
         const securedPassword = await bcrypt.hash(password, salt);
 
-        const createUserQuery = `INSERT INTO patient (p_name, address, gender, dob, p_contact, p_email, d_id, password) VALUES ('${p_name}', '${address}', '${gender}', '${dob}', ${p_contact}, '${email}', ${d_id}, '${securedPassword}')`;
-
-        const createUser = await queryDatabase(createUserQuery);
-        // const createPatientQueryArray = await queryDatabase(createUserQuery);
-        // const new_pid = Object.values(createPatientQueryArray[0])[0];
+        //const createUserQuery = `INSERT INTO patient (p_name, address, gender, dob, p_contact, p_email, d_id, password) VALUES ('${p_name}', '${address}', '${gender}', '${dob}', ${p_contact}, '${p_email}', ${d_id}, '${securedPassword}')`;
+        const createUserQuery=`SELECT InsertUserAndGetID('${p_name}', '${address}', '${gender}','${dob}','${p_email}','${p_contact}','${securedPassword}');`;
+        //const createUser = await queryDatabase(createUserQuery);
+        const createPatientQueryArray = await queryDatabase(createUserQuery);
+        const new_pid = Object.values(createPatientQueryArray[0])[0];
 
         return res.status(201).json({
             status: true,
             message: "Patient created successfully",
+            p_id:new_pid
         });
     } catch (error) {
         return res.status(500).json({
@@ -56,10 +57,10 @@ export const createPatient = async (req: Request, res: Response) => {
 
 export const loginPatient = async (req: Request, res: Response) => {
     try {
-        const { p_id, password } = req.body;
+        const { p_contact, password } = req.body;
         const getUserQuery = `SELECT *
 		FROM patient 
-		WHERE p_id = '${p_id}'`;
+		WHERE p_contact = '${p_contact}'`;
 
         let retrievedUserArray = await queryDatabase(getUserQuery);
 
@@ -84,11 +85,6 @@ export const loginPatient = async (req: Request, res: Response) => {
             });
         }
 
-        const updateLoginQuery = `UPDATE patient
-            SET last_login = NOW()
-            WHERE p_id = '${retrievedUser.p_id}';`;
-
-        queryDatabase(updateLoginQuery);
 
         return res.status(201).json({
             status: true,
@@ -177,80 +173,3 @@ export const updatePatient = async (req: Request, res: Response) => {
 
 };
 
-// Admin Functions
-
-// export const getUserByUsername = async (req: Request, res: Response) => {
-//     try {
-//         const token = req.headers.authorization?.split(" ")[1];
-//         if (!token) {
-//             return res.status(200).json({
-//                 success: false,
-//                 message: "Error! Please provide a token.",
-//             });
-//         }
-//         const decodedToken = jwt.verify(token!, process.env.JWT_SECRET!);
-//         const role = (decodedToken as Token).role;
-
-//         if (role !== Role.admin) {
-//             return res.status(403).json({
-//                 status: false,
-//                 message: "You are not authorized to perform this action",
-//             });
-//         }
-//         const query = `SELECT * FROM users WHERE username = '${req.params.username}'`;
-//         const result = await queryDatabase(query);
-//         return res.status(200).json({
-//             status: true,
-//             results: result.length,
-//             data: {
-//                 users: result,
-//             },
-//         });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: false,
-//             message: "Some error occured",
-//             error: error,
-//         });
-//     }
-// };
-
-// export const getAlldoctors = async (req: Request, res: Response) => {
-//     // console.log(req.body)
-//     try {
-//         const token = req.headers.authorization?.split(" ")[1];
-//         if (!token) {
-//             return res.status(200).json({
-//                 success: false,
-//                 message: "Error! Please provide a token.",
-//             });
-//         }
-//         const decodedToken = jwt.verify(token!, process.env.JWT_SECRET!);
-//         // const role = (decodedToken as Token).role;
-
-//         // if (role !== Role.admin) {
-//         //     return res.status(403).json({
-//         //         status: false,
-//         //         message: "You are not authorized to perform this action",
-//         //     });
-//         // }
-
-//         const query = "SELECT * FROM doctor";
-
-//         const results = await queryDatabase(query);
-//         return res.status(200).json({
-//             status: true,
-//             results: results.length,
-//             doctorData: decodedToken,
-//             data: {
-//                 doctors: results,
-//             },
-//         });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: false,
-//             message: "Some error occured",
-//             error: error,
-//         });
-//     }
-// };
